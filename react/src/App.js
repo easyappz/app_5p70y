@@ -1,14 +1,13 @@
-import logo from './logo.svg';
+import React from 'react';
 import ErrorBoundary from './ErrorBoundary';
+import Calculator from './components/Calculator';
 import './App.css';
 
 function App() {
   return (
     <ErrorBoundary>
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-        </header>
+        <Calculator />
       </div>
     </ErrorBoundary>
   );
