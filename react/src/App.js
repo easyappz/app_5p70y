@@ -1,15 +1,12 @@
 import React from 'react';
-import ErrorBoundary from './ErrorBoundary';
-import Calculator from './components/Calculator';
 import './App.css';
+import Calculator from './components/Calculator';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <div className="App">
-        <Calculator />
-      </div>
-    </ErrorBoundary>
+    <div className="App">
+      <Calculator />
+    </div>
   );
 }
 

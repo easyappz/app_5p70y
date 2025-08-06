@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import '../styles/Calculator.css';
+import './Calculator.css';
 
-function Calculator() {
+const Calculator = () => {
   const [display, setDisplay] = useState('0');
-  const [previousValue, setPreviousValue] = useState(null);
   const [operation, setOperation] = useState(null);
+  const [previousValue, setPreviousValue] = useState(null);
   const [waitingForSecondValue, setWaitingForSecondValue] = useState(false);
 
   const handleNumberClick = (value) => {
     if (display === '0' && value !== '.') {
       setDisplay(value);
+    } else if (value === '.' && display.includes('.')) {
+      return;
     } else {
-      // Prevent multiple decimal points
-      if (value === '.' && display.includes('.')) {
-        return;
-      }
       setDisplay(display + value);
     }
-    setWaitingForSecondValue(false);
+    if (waitingForSecondValue) {
+      setWaitingForSecondValue(false);
+    }
   };
 
   const handleOperationClick = (op) => {
@@ -28,7 +28,7 @@ function Calculator() {
   };
 
   const calculateResult = () => {
-    if (!previousValue || !operation) return;
+    if (!operation || !previousValue) return;
 
     const currentValue = parseFloat(display);
     let result = 0;
@@ -55,59 +55,56 @@ function Calculator() {
     }
 
     setDisplay(result.toString());
-    setPreviousValue(null);
     setOperation(null);
+    setPreviousValue(null);
     setWaitingForSecondValue(false);
   };
 
   const handleClear = () => {
     setDisplay('0');
-    setPreviousValue(null);
     setOperation(null);
+    setPreviousValue(null);
     setWaitingForSecondValue(false);
   };
 
-  const handlePercentage = () => {
-    const value = parseFloat(display);
-    setDisplay((value / 100).toString());
-  };
-
-  const handleToggleSign = () => {
-    if (display !== '0') {
-      setDisplay((parseFloat(display) * -1).toString());
+  const handleBackspace = () => {
+    if (display.length === 1 || (display.length === 2 && display.startsWith('-'))) {
+      setDisplay('0');
+    } else {
+      setDisplay(display.slice(0, -1));
     }
   };
 
+  const buttons = [
+    'AC', '⌫', '%', '÷',
+    '7', '8', '9', '×',
+    '4', '5', '6', '-',
+    '1', '2', '3', '+',
+    '0', '.', '='
+  ];
+
   return (
     <div className="calculator">
-      <div className="calculator-display">{display}</div>
-      <div className="calculator-buttons">
-        <button className="button light-gray" onClick={handleClear}>AC</button>
-        <button className="button light-gray" onClick={handleToggleSign}>±</button>
-        <button className="button light-gray" onClick={handlePercentage}>%</button>
-        <button className="button orange" onClick={() => handleOperationClick('÷')}>÷</button>
-
-        <button className="button dark-gray" onClick={() => handleNumberClick('7')}>7</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('8')}>8</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('9')}>9</button>
-        <button className="button orange" onClick={() => handleOperationClick('×')}>×</button>
-
-        <button className="button dark-gray" onClick={() => handleNumberClick('4')}>4</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('5')}>5</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('6')}>6</button>
-        <button className="button orange" onClick={() => handleOperationClick('-')}>-</button>
-
-        <button className="button dark-gray" onClick={() => handleNumberClick('1')}>1</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('2')}>2</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('3')}>3</button>
-        <button className="button orange" onClick={() => handleOperationClick('+')}>+</button>
-
-        <button className="button dark-gray zero" onClick={() => handleNumberClick('0')}>0</button>
-        <button className="button dark-gray" onClick={() => handleNumberClick('.')}>.</button>
-        <button className="button orange equals" onClick={calculateResult}>=</button>
+      <div className="display">{display}</div>
+      <div className="buttons">
+        {buttons.map((btn) => (
+          <button
+            key={btn}
+            className={`button ${btn === '=' ? 'equals' : ''} ${['AC', '⌫', '%'].includes(btn) ? 'special' : ''} ${['÷', '×', '-', '+'].includes(btn) ? 'operation' : ''}`}
+            onClick={() => {
+              if (btn === 'AC') handleClear();
+              else if (btn === '⌫') handleBackspace();
+              else if (btn === '=') calculateResult();
+              else if (['+', '-', '×', '÷'].includes(btn)) handleOperationClick(btn);
+              else handleNumberClick(btn);
+            }}
+          >
+            {btn}
+          </button>
+        ))}
       </div>
     </div>
   );
-}
+};
 
 export default Calculator;
